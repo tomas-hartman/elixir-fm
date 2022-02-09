@@ -7,7 +7,7 @@
 // A--P------  adjective, passive
 // D---------  adverb
 
-import { convertToObject } from "../helpers";
+import { convertToObject, getKeyByValue } from "../helpers";
 
 const tagKeys = ["category", "categoryModifier", "mood", "voice", "-", "person", "gender", "number", "case", "form"];
 
@@ -25,8 +25,8 @@ type Category = ValueOf<typeof category>;
 
 const modifier = {
   "-": undefined,
+  I: "imperfective",
   P: "perfective",
-  I: "inflected",
   C: "imperative",
 } as const;
 
@@ -34,7 +34,10 @@ type Modifier = ValueOf<typeof modifier>;
 
 const mood = {
   "-": undefined,
+  I: "indicative",
+  S: "subjunctive",
   J: "jussive",
+  E: "energetic",
 } as const;
 
 type Mood = ValueOf<typeof mood>;
@@ -90,15 +93,13 @@ const form = {
 
 type Form = ValueOf<typeof form>;
 
-type TagKeys = typeof category | typeof modifier | typeof mood | typeof voice | typeof person | typeof gender | typeof number | typeof grCase | typeof form;
-type TagValues = Category | Modifier | Mood | Voice | Person | Gender | Number | Case | Form;
-
-const tagOptions = [
+/** Complete tag structure */
+const tagMap = [
   category,
   modifier,
   mood,
   voice,
-  {"-": undefined},
+  { "-": undefined },
   person,
   gender,
   number,
@@ -107,34 +108,73 @@ const tagOptions = [
 ]
 
 export const parseTag = (tag: string, outputString: boolean = false) => {
-  if(tag.length !== 10) {
+  if (tag.length !== 10) {
     console.error("Tag is corrupt, it should contain 10 characters.", tag, tag.length);
     return;
   }
 
-  const entities = tag.split("");
+  const slots = tag.split("");
 
-  const values = entities.map((entity, i) => {
-    const output = (tagOptions[i] as any)[entity];
+  const values = slots.map((slot, i) => {
+    const output = (tagMap[i] as any)[slot];
 
-    if(entity !== "-" && !output) {
-      console.error("Unexpected property:", tag, entity, i);
+    if (slot !== "-" && !output) {
+      console.error("Unexpected property:", tag, slot, i);
       return;
     }
 
     return output;
   });
 
-  if(outputString) {
+  if (outputString) {
     return values.filter(item => item).join(", ");
   }
-  
+
   return convertToObject(tagKeys, values);
+}
+
+/**
+ * @todo refactor ninja code
+ */
+const composeTag = (props: string) => {
+  const tagBase = Array(10).fill("-");
+  const cleanProps = props.split(",").map(item => item.trim().toLowerCase());
+
+  const validProperties = tagMap.reduce((previous: string[], current) => {
+    return [...previous, ...Object.values(current)]
+  }, [])
+
+  cleanProps.forEach((prop) => {
+    if (!validProperties.includes(prop)) throw Error(`Params invalid. '${prop}' is an incorrect value.`);
+
+    const id = tagMap.findIndex(item => Object.values(item).includes(prop))
+
+    if (tagBase[id] === "-") {
+      tagBase.splice(id, 1, getKeyByValue(tagMap[id], prop));
+      return;
+    }
+
+    const newKey = getKeyByValue(tagMap[id], prop);
+
+    tagBase.splice(id, 1, [...tagBase[id], newKey]);
+  })
+
+  const output = tagBase.map(slot => {
+    if (Array.isArray(slot)) return `[${slot.join("")}]`;
+
+    return slot;
+  }).join("");
+
+  return output;
 }
 
 // test
 // console.log(
 //   parseTag("A-----MP1R", true),
+//   "\n",
 //   parseTag("VP-P-3MS--", true)
 // );
 
+// test
+console.log(composeTag("noun,perfective,accusative"));
+console.log(composeTag("noun, verb, adverb, perfective,accusative"));

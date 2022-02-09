@@ -19,3 +19,7 @@ export const sanitize = (data: string) => {
   
   return data.replace(/[<>&'"|]/g, "")
 }
+
+export const getKeyByValue = (object: any, value: any) => {
+  return Object.keys(object).find((key) => object[key] === value);
+}
