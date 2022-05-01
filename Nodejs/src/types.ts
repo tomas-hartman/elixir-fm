@@ -1,16 +1,29 @@
+export type XtagObject = {
+  code: string,
+  description: string | {[x: string]: {}} | undefined,
+}
+
 /**
  * @todo Better property naming!
  */
-
-export interface LookupEntity {
+export type LookupEntity = {
+  /** Orthography */
+  ar: string,
+  /** @todo Ortography references */
   _ref1: string,
   _ref2: string,
-  tag: string,
+  xtag: XtagObject,
+  /** Phonetic transcription (citation form) */
   transcription: string,
+  /** Word root */
   root: string,
+  /** Morphs of citation form */
   schema: string,
+  /** Lexical reference */
   meaning: string[],
-  stem: string,
+  /** Derivational class */
+  class: string,
+  /** Variants and derivations */
   variants: Omit<LookupEntity, "meaning" | "stem" | "variant">[]
 }
 
@@ -22,7 +35,7 @@ export interface LookupRes {
 export interface ResolveEntity {
   _: string;
   transcription: string,
-  tag: string,
+  xtag: string,
   inflected: string,
   schema: string,
   root: string,

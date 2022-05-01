@@ -7,7 +7,8 @@
 // A--P------  adjective, passive
 // D---------  adverb
 
-import { convertToObject, getKeyByValue } from "../helpers";
+import { getKeyByValue } from "../helpers/getKeyByValue";
+import { convertToObject } from "../helpers/convertToObject";
 
 const tagKeys = ["category", "categoryModifier", "mood", "voice", "-", "person", "gender", "number", "case", "form"];
 

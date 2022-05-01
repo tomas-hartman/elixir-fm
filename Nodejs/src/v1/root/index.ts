@@ -1,7 +1,8 @@
 import { exec } from "child_process";
 import { RequestHandler } from "express";
 import { LookupRes } from "../../types";
-import { sanitize } from "../../utils/helpers";
+import { sanitize } from "../../utils/helpers/sanitize";
+
 import { parseLookup } from "../../utils/parsers/parseLookup";
 
 export const root: RequestHandler = (req, res) => {

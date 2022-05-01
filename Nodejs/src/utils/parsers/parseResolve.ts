@@ -1,11 +1,11 @@
 import { ResolveEntity, ResolveRes } from "../../types";
-import { convertToObject } from "../helpers";
+import { convertToObject } from "../helpers/convertToObject";
 
 export const parseResolve = (data: string): ResolveRes => {
   const keys: (keyof ResolveEntity)[] = [
     "_",
     "transcription",
-    "tag",
+    "xtag",
     "inflected",
     "schema",
     "root",

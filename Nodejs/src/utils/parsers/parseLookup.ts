@@ -1,49 +1,49 @@
 import { LookupEntity, LookupRes } from "../../types";
-import { convertToObject } from "../helpers";
+import { convertToObject } from "../helpers/convertToObject";
 
-export const parseLookup = (output: string): LookupRes => {
+export const parseLookup = (input: string): LookupRes => {
   const keys: (keyof LookupEntity)[] = [
+    "ar",
     "_ref1",
     "_ref2",
-    "tag",
+    "xtag",
     "transcription",
     "root",
     "schema",
     "meaning",
-    "stem"
+    "class"
   ];
 
-  const indexOfEntry = output.indexOf("\t");
+  const originalInput = input.slice(0, input.indexOf("\t"));
 
-  const originalInput = output.slice(0, output.indexOf("\t"));
-  const string = output.substring(indexOfEntry);
-  const entries = string.split("\n");
+  const isVariant = (tagCode: string) => {
+    return tagCode.split("")[0] === "-";
+  }
 
-  const medium: LookupEntity[] = [];
+  const reducer = (prev: LookupEntity[], current: string) => {
+    /** Filter out possible empty lines */
+    if(!current) return prev;
+    
+    const val = convertToObject<LookupEntity>(keys, current.split("\t"));
 
-  entries.forEach((entry, i) => {
-    let split: string | string[] = entry.split("\t");
-    split = split.slice(1);
+    /** Variants  */
+    if(prev.length > 0 && isVariant(val.xtag.code)) {
+      const lastMainId = prev.length - 1;
 
-    const object = convertToObject<LookupEntity>(keys, split);
-    const { length } = split;
+      prev[lastMainId].variants = prev[lastMainId].variants 
+        ? [...prev[lastMainId].variants, val] 
+        : [val];
 
-    // Main entries
-    if (length > 6) {
-      medium.push({ ...object, variants: [] });
-      return;
+      return prev;
     }
 
-    // Clear empty lines
-    if(length === 0) return;
+    return [...prev, val];
+  }
 
-    // Subentries
-    medium[medium.length - 1]?.variants.push(object);
-    return;
-  })
+  const resultDataReduced = input.split("\n").reduce<LookupEntity[]>(reducer, [])
 
   return {
     input: originalInput,
-    output: medium
-  }
+    output: resultDataReduced
+  };
 }

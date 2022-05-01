@@ -1,6 +1,7 @@
 import { exec } from "child_process";
 import { RequestHandler } from "express";
-import { sanitize } from "../../utils/helpers";
+import { sanitize } from "../../utils/helpers/sanitize";
+
 import { parseResolve } from "../../utils/parsers/parseResolve";
 
 
