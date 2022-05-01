@@ -1,9 +1,9 @@
 import { ResolveEntity, ResolveRes } from "../../types";
 import { convertToObject } from "../helpers/convertToObject";
 
-export const parseResolve = (data: string): ResolveRes => {
+export const parseResolve = (input: string): ResolveRes => {
   const keys: (keyof ResolveEntity)[] = [
-    "_",
+    "token",
     "transcription",
     "xtag",
     "inflected",
@@ -14,8 +14,16 @@ export const parseResolve = (data: string): ResolveRes => {
     "_ref",
     "meaning"
   ];
+
+  // console.log(input.split("\n\n").length);
+
+  /**
+   * \n\n - separates token groups
+   * \n - separates entities in groups
+   * \t - separates properties
+   */
   
-  const rows = data.split("\n");
+  const rows = input.split("\n");
   const entries = rows.map(item => item.split("\t"));
   const cleanEntries = entries.filter(entry => entry.length > 1);
 

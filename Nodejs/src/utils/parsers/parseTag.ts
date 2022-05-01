@@ -19,7 +19,8 @@ const category = {
   N: "noun",
   V: "verb",
   D: "adverb",
-  P: "preposition"
+  P: "preposition",
+  F: "particle"
 } as const;
 
 type Category = ValueOf<typeof category>;
@@ -89,7 +90,8 @@ type Case = ValueOf<typeof grCase>;
 const form = {
   "-": undefined,
   I: "indefinite",
-  R: "reduced/construct"
+  R: "reduced/construct",
+  // D: "definite",
 } as const;
 
 type Form = ValueOf<typeof form>;
@@ -108,6 +110,12 @@ const tagMap = [
   form
 ]
 
+/**
+ * Parses xtag code.
+ * @param tag {string}
+ * @param outputString {boolean}
+ * @returns Either human readable string of peoperties or object with tag definitions.
+ */
 export const parseTag = (tag: string, outputString: boolean = false) => {
   if (tag.length !== 10) {
     console.error("Tag is corrupt, it should contain 10 characters.", tag, tag.length);
@@ -135,6 +143,7 @@ export const parseTag = (tag: string, outputString: boolean = false) => {
 }
 
 /**
+ * Composes xtag string from human readable tag input.
  * @todo refactor ninja code
  */
 const composeTag = (props: string) => {

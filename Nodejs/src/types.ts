@@ -7,8 +7,8 @@ export type XtagObject = {
  * @todo Better property naming!
  */
 export type LookupEntity = {
-  /** Orthography */
-  ar: string,
+  /** Token that was used to resolve action  */
+  token: string,
   /** @todo Ortography references */
   _ref1: string,
   _ref2: string,
@@ -27,13 +27,12 @@ export type LookupEntity = {
   variants: Omit<LookupEntity, "meaning" | "stem" | "variant">[]
 }
 
-export interface LookupRes {
-  input: string,
-  output: LookupEntity[]
-}
-
+/**
+ * @todo Better property naming!
+ * @todo Create generic Entity with common properties
+ */
 export interface ResolveEntity {
-  _: string;
+  token: string;
   transcription: string,
   xtag: string,
   inflected: string,
@@ -45,11 +44,36 @@ export interface ResolveEntity {
   meaning: string[],
 }
 
+/**
+ * General definition for responses
+ */
+export type EntityResponse<T> = {
+  /** Token that was used to resolve action (lookup, resolve etc) */
+  token: string;
+  /** @todo rename to omething more suitable */
+  output: T[];
+}
+
+/** replaces ResolveRes */
+export type ResolveResponse = EntityResponse<ResolveEntity>[];
+/** replaces LookupRes */
+export type LookupResponse = EntityResponse<LookupEntity>;
+
+/** @todo */
+// export type DeriveResponse = EntityResponse<DeriveEntity>;
+// export type InflectResponse = EntityResponse<InflectEntity>;
+
+/**
+ * @deprecated use ResolveResponse
+ */
 export interface ResolveRes {
   [key: string]: ResolveEntity[]
 }
 
-export interface EntityResponse<T> {
+/**
+ * @deprecated Do not use.
+ */
+export interface __EntityResponse<T> {
   token: string;
   variants: T[]
 }

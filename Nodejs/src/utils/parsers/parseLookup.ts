@@ -1,9 +1,9 @@
-import { LookupEntity, LookupRes } from "../../types";
+import { LookupEntity, LookupResponse } from "../../types";
 import { convertToObject } from "../helpers/convertToObject";
 
-export const parseLookup = (input: string): LookupRes => {
+export const parseLookup = (input: string): LookupResponse => {
   const keys: (keyof LookupEntity)[] = [
-    "ar",
+    "token",
     "_ref1",
     "_ref2",
     "xtag",
@@ -43,7 +43,7 @@ export const parseLookup = (input: string): LookupRes => {
   const resultDataReduced = input.split("\n").reduce<LookupEntity[]>(reducer, [])
 
   return {
-    input: originalInput,
+    token: originalInput,
     output: resultDataReduced
   };
 }

@@ -1,6 +1,6 @@
 import { exec } from "child_process";
 import { RequestHandler } from "express";
-import { LookupRes } from "../../types";
+import { LookupResponse } from "../../types";
 import { sanitize } from "../../utils/helpers/sanitize";
 
 import { parseLookup } from "../../utils/parsers/parseLookup";
@@ -26,7 +26,7 @@ export const root: RequestHandler = (req, res) => {
 
     if(stderr) console.error(`stderr: ${stderr}`);
 
-    const lookupRes: LookupRes = parseLookup(stdout);
+    const lookupRes: LookupResponse = parseLookup(stdout);
 
     const roots = lookupRes.output.map((item) => item.root);
     const uniqueRoots = Array.from(new Set(roots));
