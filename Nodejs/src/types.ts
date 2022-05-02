@@ -18,7 +18,7 @@ export type LookupEntity = {
   /** Word root */
   root: string,
   /** Morphs of citation form */
-  schema: string,
+  morphs: string,
   /** Lexical reference */
   meaning: string[],
   /** Derivational class */
@@ -36,7 +36,8 @@ export interface ResolveEntity {
   transcription: string,
   xtag: string,
   inflected: string,
-  schema: string,
+  /** Morphs of citation form */
+  morphs: string,
   root: string,
   shortSchema: string,
   lemma: string,
@@ -57,7 +58,7 @@ export type EntityResponse<T> = {
 /** replaces ResolveRes */
 export type ResolveResponse = EntityResponse<ResolveEntity>[];
 /** replaces LookupRes */
-export type LookupResponse = EntityResponse<LookupEntity>;
+export type LookupResponse = EntityResponse<LookupEntity>[];
 
 /** @todo */
 // export type DeriveResponse = EntityResponse<DeriveEntity>;

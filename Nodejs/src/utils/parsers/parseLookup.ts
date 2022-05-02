@@ -9,18 +9,16 @@ export const parseLookup = (input: string): LookupResponse => {
     "xtag",
     "transcription",
     "root",
-    "schema",
+    "morphs",
     "meaning",
     "class"
   ];
-
-  const originalInput = input.slice(0, input.indexOf("\t"));
 
   const isVariant = (tagCode: string) => {
     return tagCode.split("")[0] === "-";
   }
 
-  const reducer = (prev: LookupEntity[], current: string) => {
+  const entityReducer = (prev: LookupEntity[], current: string) => {
     /** Filter out possible empty lines */
     if(!current) return prev;
     
@@ -40,10 +38,14 @@ export const parseLookup = (input: string): LookupResponse => {
     return [...prev, val];
   }
 
-  const resultDataReduced = input.split("\n").reduce<LookupEntity[]>(reducer, [])
+  const resultDataReduced = input.split("\n\n").reduce((prev: LookupResponse, current) => {
+    if(!current || !current.trim()) return prev;
 
-  return {
-    token: originalInput,
-    output: resultDataReduced
-  };
+    const val = current.split("\n").reduce<LookupEntity[]>(entityReducer, [])
+    const currentToken = val[0]?.token;
+
+    return [...prev, {token: currentToken, output: val}]
+  }, [])
+
+  return resultDataReduced;
 }

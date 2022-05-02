@@ -102,14 +102,26 @@ GET /resolve/
   echo "درس", 'V[PI]I--3-S--', 'VCJ-------' | elixir inflect
 ```
 
+#### Suggested routes:
+
+- /inflect?token={word}&xtag={xtag.code}
+- /inflect?token={word}&desc={xtag.description}
+
 ### Derive
 
 ```sh
   echo "(1224,1)", 'N---------', '[VA]---------' | elixir derive
+  echo "(1224,1)", '[VA]---------' | elixir derive 
+  echo "(1224,1)" | elixir derive 
 
   # NOT WORKING!
   echo "درس", 'N---------', '[VA]---------' | elixir derive
 ```
+
+#### Suggested routes:
+
+- /derive?token={word}&xtag={xtag.code}
+- /derive?token={word}&desc={xtag.description}
 
 ### Lookup
 
@@ -118,5 +130,13 @@ GET /lookup/
 ```sh
   echo "مدرسة" | elixir lookup
   echo "book" | elixir lookup
+
+  echo "d r y" | elixir lookup tex # search by root
+```
+
+### Combinations
+
+```sh
+echo "ندوة" | elixir lookup | elixir lexicon # returns some simplified xml structure
 ```
 -->
