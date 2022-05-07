@@ -1,5 +1,6 @@
 import { exec } from "child_process";
 import { RequestHandler } from "express";
+import { RequestError } from "../../types";
 import { sanitize } from "../../utils/helpers/sanitize";
 
 import { parseLookup } from "../../utils/parsers/parseLookup";
@@ -8,11 +9,13 @@ export const lookup: RequestHandler = (req, res) => {
   const {query} = req.params;
 
   if(!query) {
-    res.sendStatus(404)
-    res.json({
+    const error: RequestError = {
       status: res.statusCode,
       reason: res.statusMessage
-    })
+    }
+
+    res.status(404);
+    res.json(error)
   }
 
   const sanitized = sanitize(query);

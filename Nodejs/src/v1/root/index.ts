@@ -1,6 +1,6 @@
 import { exec } from "child_process";
 import { RequestHandler } from "express";
-import { LookupResponse } from "../../types";
+import { LookupEntity, RequestError } from "../../types";
 import { sanitize } from "../../utils/helpers/sanitize";
 
 import { parseLookup } from "../../utils/parsers/parseLookup";
@@ -9,11 +9,13 @@ export const root: RequestHandler = (req, res) => {
   const {query} = req.params;
 
   if(!query) {
-    res.sendStatus(404)
-    res.json({
+    const error: RequestError = {
       status: res.statusCode,
       reason: res.statusMessage
-    })
+    }
+
+    res.status(404);
+    res.json(error)
   }
 
   const sanitized = sanitize(query);
@@ -26,9 +28,20 @@ export const root: RequestHandler = (req, res) => {
 
     if(stderr) console.error(`stderr: ${stderr}`);
 
-    const lookupRes: LookupResponse = parseLookup(stdout);
+    if(sanitized.split(" ").length > 1) {
+      console.error("Root request must contain exactly one token.")
 
-    const roots = lookupRes.output.map((item) => item.root);
+      res.status(400);
+      res.json({
+        status: res.statusCode,
+        reason: "Root request must contain exactly one token."
+      });
+
+      return;
+    }
+
+    const lookupRes = parseLookup(stdout);
+    const roots = lookupRes[0].output.map((item: LookupEntity) => item.root);
     const uniqueRoots = Array.from(new Set(roots));
 
     res.json({

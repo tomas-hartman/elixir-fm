@@ -55,6 +55,11 @@ export type EntityResponse<T> = {
   output: T[];
 }
 
+export type RequestError = {
+  status: number,
+  reason: string,
+}
+
 /** replaces ResolveRes */
 export type ResolveResponse = EntityResponse<ResolveEntity>[];
 /** replaces LookupRes */
