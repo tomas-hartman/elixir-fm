@@ -14,25 +14,48 @@ const tagKeys = ["category", "categoryModifier", "mood", "voice", "-", "person",
 
 type ValueOf<T> = T[keyof T];
 
+/** 
+ * @todo merge category and modifier
+ * @see {@link ../../../../Perl/ElixirFM/lib/ElixirFM.pm#L171} 
+ */
 const category = {
-  A: "adjective",
-  N: "noun",
-  V: "verb",
-  D: "adverb",
-  P: "preposition",
-  F: "particle"
+  "V-": "verb",
+  "VI": "imperfective",
+  "VP": "perfective",
+  "VC": "imperative",
+  "N-": "noun",
+  "A-": "adjective",
+  "S-": "pronoun",
+  "SP": "personal",
+  "SD": "demonstrative",
+  "SR": "relative",
+  "Q-": "numeral",
+  "QI": "",
+  "QU": "",
+  "QV": "",
+  "QX": "",
+  "QY": "",
+  "QL": "",
+  "QC": "",
+  "QD": "",
+  "QM": "",
+  "D-": "adverb",
+  "P-": "preposition",
+  "PI": "inflected",
+  "C-": "conjunction",
+  "F-": "particle",
+  "FN": "negative",
+  "FI": "interrogative",
+  "I-": "interjection",
+  "X-": "foreign word",
+  "Y-": "acronym/unit",
+  "Z-": "zero inflections",
+  "G-": "graphical symbol"
 } as const;
 
 type Category = ValueOf<typeof category>;
 
-const modifier = {
-  "-": undefined,
-  I: "imperfective",
-  P: "perfective",
-  C: "imperative",
-} as const;
-
-type Modifier = ValueOf<typeof modifier>;
+const generalCategory = Object.fromEntries(Object.entries(category).filter(([key]) => key[1] === "-"));
 
 const mood = {
   "-": undefined,
@@ -87,19 +110,21 @@ const grCase = {
 
 type Case = ValueOf<typeof grCase>;
 
-const form = {
+const grState = {
   "-": undefined,
   I: "indefinite",
+  D: "definite",
   R: "reduced/construct",
-  // D: "definite",
+  A: "absolute/negative",
+  C: "complex/overdetermined",
+  L: "lifted/underdetermined"
 } as const;
 
-type Form = ValueOf<typeof form>;
+type Form = ValueOf<typeof grState>;
 
 /** Complete tag structure */
 const tagMap = [
   category,
-  modifier,
   mood,
   voice,
   { "-": undefined },
@@ -107,7 +132,7 @@ const tagMap = [
   gender,
   number,
   grCase,
-  form
+  grState
 ]
 
 /**
@@ -122,10 +147,16 @@ export const parseTag = (tag: string, outputString: boolean = false) => {
     return;
   }
 
-  const slots = tag.split("");
+  const slots = [tag.slice(0,2), ...tag.slice(2).split("")];
 
   const values = slots.map((slot, i) => {
     const output = (tagMap[i] as any)[slot];
+
+    if(i === 0 && slot[1] !== "-") {
+      const mainCategoryName = generalCategory[slot[0] + "-"];
+
+      return `${output} ${mainCategoryName}`;
+    }
 
     if (slot !== "-" && !output) {
       console.error("Unexpected property:", tag, slot, i);
@@ -145,6 +176,8 @@ export const parseTag = (tag: string, outputString: boolean = false) => {
 /**
  * Composes xtag string from human readable tag input.
  * @todo refactor ninja code
+ * @todo refactor for using
+ * @see {@link ../../../../Perl/ElixirFM/lib/ElixirFM.pm#L296} 
  */
 const composeTag = (props: string) => {
   const tagBase = Array(10).fill("-");
