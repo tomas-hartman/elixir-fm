@@ -8,9 +8,9 @@ export type XtagObject = {
  */
 export type LookupEntity = {
   /** Token that was used to resolve action  */
-  token: string,
+  token?: string,
   /** @todo Ortography references */
-  _ref1: string,
+  _ref1?: string,
   _ref2: string,
   xtag: XtagObject,
   /** Phonetic transcription (citation form) */
@@ -24,8 +24,10 @@ export type LookupEntity = {
   /** Derivational class */
   class: string,
   /** Variants and derivations */
-  variants: Omit<LookupEntity, "meaning" | "stem" | "variant">[]
+  variants: LookupEntityVariant[]
 }
+
+type LookupEntityVariant = Omit<LookupEntity, "token" | "_ref1" | "_ref2" | "meaning" | "class"| "variants">;
 
 /**
  * @todo Better property naming!
@@ -50,7 +52,7 @@ export interface ResolveEntity {
  */
 export type EntityResponse<T> = {
   /** Token that was used to resolve action (lookup, resolve etc) */
-  token: string;
+  token?: string;
   /** @todo rename to omething more suitable */
   output: T[];
 }

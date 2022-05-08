@@ -8,14 +8,22 @@ import { convertXtag } from "../convertors/xtag";
  * @returns 
  */
 export const convertToObject = <T extends unknown>(keys: (keyof T)[], values: any[]): T => {
-  const map = keys.map((_, i) => {
-    if(values[i]) {
-      if(keys[i] === "root") return [keys[i], JSON.parse(values[i])];
-      if(keys[i] === "meaning") return [keys[i], JSON.parse(values[i])];
-      if(keys[i] === "xtag") return convertXtag<keyof T>(keys[i], values[i]);
+  const map = keys.map((key, i) => {
+    let value = values[i]?.trim();
+
+    switch (key) {
+      case "token":
+      case "_ref1":
+      case "_ref2":
+        return [key, value ? value : undefined];
+      case "root":
+      case "meaning":
+        return [key, value ? JSON.parse(value) : undefined];
+      case "xtag":
+        return convertXtag<keyof T>(key, value);
+      default:
+        return [key, value]
     }
-  
-    return [keys[i], values[i]]
   });
 
   const output: T = Object.fromEntries(map);

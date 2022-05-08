@@ -23,6 +23,7 @@ const category = {
   "VI": "imperfective",
   "VP": "perfective",
   "VC": "imperative",
+  "-I": "imperative",
   "N-": "noun",
   "A-": "adjective",
   "S-": "pronoun",
@@ -143,7 +144,7 @@ const tagMap = [
  */
 export const parseTag = (tag: string, outputString: boolean = false) => {
   if (tag.length !== 10) {
-    console.error("Tag is corrupt, it should contain 10 characters.", tag, tag.length);
+    console.error("\nTag is corrupt, it should contain 10 characters.", "\ntag:", tag, "\ntag length:", tag.length);
     return;
   }
 
@@ -154,11 +155,12 @@ export const parseTag = (tag: string, outputString: boolean = false) => {
 
     if(i === 0 && slot[1] !== "-") {
       const mainCategoryName = generalCategory[slot[0] + "-"];
+      const outputName = mainCategoryName ? `${output} ${mainCategoryName}` : output;
 
-      return `${output} ${mainCategoryName}`;
+      return outputName;
     }
 
-    if (slot !== "-" && !output) {
+    if (slot !== "-" && slot !== "--" && !output) {
       console.error("Unexpected property:", tag, slot, i);
       return;
     }
